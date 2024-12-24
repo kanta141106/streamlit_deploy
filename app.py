@@ -143,7 +143,7 @@ def sheet1(path):
 
     # OpenAI APIキーを環境変数から取得
     openai.api_key = st.secrets["openai"]["api_key"]
-    client = openai.OpenAI()
+    # client = openai.OpenAI()
     # 入力JSONファイルのパスを指定
     input_json_path = "output.json"
 
@@ -205,7 +205,7 @@ def sheet1(path):
 ###jsonデータ
 以下のJSONデータを基に処理してください: {input_json}
     """
-    chat_completion = client.chat.completions.create(
+    chat_completion = openai.ChatCompletion.create(
             messages=[{
                 "role": "user",
                 "content": prompt
@@ -352,7 +352,7 @@ def sheet2(path):
 
     # OpenAI APIキーを環境変数から取得
     openai.api_key = st.secrets["openai"]["api_key"]
-    client = openai.OpenAI()
+    # client = openai.OpenAI()
     # 入力JSONファイルのパスを指定
     input_json_path = "output_1.json"
 
@@ -420,7 +420,7 @@ def sheet2(path):
 以下のJSONデータを基に処理してください: {input_json}
     """
 
-    chat_completion = client.chat.completions.create(
+    chat_completion = openai.ChatCompletion.create(
             messages=[{
                 "role": "user",
                 "content": prompt
