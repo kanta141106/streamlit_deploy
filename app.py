@@ -459,19 +459,34 @@ if __name__ == "__main__":
     uploaded_file = st.file_uploader("Excelファイルをアップロードしてください", type=['xlsx'])
 
     if uploaded_file is not None:
-        with st.spinner('処理中...'):
-            # 一時ファイルを作成してパスを取得
-            with tempfile.NamedTemporaryFile(delete=False, suffix=os.path.splitext(uploaded_file.name)[1]) as tmp_file:
-                tmp_file.write(uploaded_file.getvalue())
-                temp_path = tmp_file.name
+        # セッション状態に保存されていない場合のみ処理を実行
+        if "sheet1_buffer" not in st.session_state or "sheet2_buffer" not in st.session_state:
+            with st.spinner('処理中...'):
+                # 一時ファイルを作成してパスを取得
+                with tempfile.NamedTemporaryFile(delete=False, suffix=os.path.splitext(uploaded_file.name)[1]) as tmp_file:
+                    tmp_file.write(uploaded_file.getvalue())
+                    temp_path = tmp_file.name
 
-            try:
-                excel_buffer1 = sheet1(temp_path)
-                excel_buffer2 = sheet2(temp_path)
-                st.write("以下のExcelファイルへ転記が完了しました。ダウンロードしてください。")
-                st.download_button("シート1", excel_buffer1, file_name="sheet1.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-                st.download_button("シート2", excel_buffer2, file_name="sheet2.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-            finally:
-                # 一時ファイルのクリーンアップ
-                if os.path.exists(temp_path):
-                    os.unlink(temp_path)
+                try:
+                    # シート処理
+                    st.session_state["sheet1_buffer"] = sheet1(temp_path)
+                    st.session_state["sheet2_buffer"] = sheet2(temp_path)
+                finally:
+                    # 一時ファイルのクリーンアップ
+                    if os.path.exists(temp_path):
+                        os.unlink(temp_path)
+
+        # ダウンロードボタン
+        st.write("以下のExcelファイルへ転記が完了しました。ダウンロードしてください。")
+        st.download_button(
+            "シート1", 
+            st.session_state["sheet1_buffer"], 
+            file_name="sheet1.xlsx", 
+            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        )
+        st.download_button(
+            "シート2", 
+            st.session_state["sheet2_buffer"], 
+            file_name="sheet2.xlsx", 
+            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        )
