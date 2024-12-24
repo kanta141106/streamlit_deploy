@@ -104,7 +104,7 @@ def fill_data(sheet, structure, col):
         # 予想外の型ならそのまま返す等 (必要ならエラーにしても良い)
         return structure
 
-def sheet1(path, api_key):
+def sheet1(path):
     wb = openpyxl.load_workbook(path, data_only=True)
     
     sheet = wb["Table 1"]  # 読み込むシートを指定
@@ -142,7 +142,7 @@ def sheet1(path, api_key):
     print("Done.")
 
     # OpenAI APIキーを環境変数から取得
-    openai.api_key = api_key
+    openai.api_key = st.secrets["openai"]["api_key"]
     client = openai.OpenAI()
     # 入力JSONファイルのパスを指定
     input_json_path = "output.json"
@@ -291,7 +291,7 @@ structure_map = {
     "備考":38
 }
 
-def sheet2(path, api_key):
+def sheet2(path):
     # Excelファイルを読み込み
     wb = openpyxl.load_workbook(path, data_only=True)
     sheet = wb["Table 2"]  # 読み込むシートを指定
@@ -351,7 +351,7 @@ def sheet2(path, api_key):
     print("Done.")
 
     # OpenAI APIキーを環境変数から取得
-    openai.api_key = api_key
+    openai.api_key = st.secrets["openai"]["api_key"]
     client = openai.OpenAI()
     # 入力JSONファイルのパスを指定
     input_json_path = "output_1.json"
@@ -456,7 +456,6 @@ def sheet2(path, api_key):
 
 if __name__ == "__main__":
     st.title("設備データ処理アプリケーション")
-    api_key = st.secrets["openai"]["api_key"]
     uploaded_file = st.file_uploader("Excelファイルをアップロードしてください", type=['xlsx'])
 
     if uploaded_file is not None:
@@ -466,8 +465,8 @@ if __name__ == "__main__":
                 tmp_file.write(uploaded_file.getvalue())
                 temp_path = tmp_file.name
 
-            excel_buffer1 = sheet1(temp_path, api_key)
-            excel_buffer2 =  sheet2(temp_path, api_key)
+            excel_buffer1 = sheet1(temp_path)
+            excel_buffer2 =  sheet2(temp_path)
             st.write("以下のExcelファイルへ転記が完了しました。ダウンロードしてください。")
             st.download_button("シート1", excel_buffer1, file_name="sheet1.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
             st.download_button("シート2", excel_buffer2, file_name="sheet2.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
