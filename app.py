@@ -465,16 +465,13 @@ if __name__ == "__main__":
                 tmp_file.write(uploaded_file.getvalue())
                 temp_path = tmp_file.name
 
-            excel_buffer1 = sheet1(temp_path)
-            excel_buffer2 =  sheet2(temp_path)
-            
-            # 一時ファイルのクリーンアップ
-            def cleanup():
+            try:
+                excel_buffer1 = sheet1(temp_path)
+                excel_buffer2 = sheet2(temp_path)
+                st.write("以下のExcelファイルへ転記が完了しました。ダウンロードしてください。")
+                st.download_button("シート1", excel_buffer1, file_name="sheet1.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+                st.download_button("シート2", excel_buffer2, file_name="sheet2.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+            finally:
+                # 一時ファイルのクリーンアップ
                 if os.path.exists(temp_path):
                     os.unlink(temp_path)
-            
-            # セッション終了時にクリーンアップを実行
-            st.session_state['cleanup'] = cleanup
-    st.write("以下のExcelファイルへ転記が完了しました。ダウンロードしてください。")
-    st.download_button("シート1", excel_buffer1, file_name="sheet1.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-    st.download_button("シート2", excel_buffer2, file_name="sheet2.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
