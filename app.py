@@ -456,9 +456,7 @@ def sheet2(path, api_key):
 
 if __name__ == "__main__":
     st.title("設備データ処理アプリケーション")
-    api_key = st.text_input("OpenAI API Key", 
-                           type="password",  # パスワードとして表示
-                           help="OpenAIのAPIキーを入力してください")
+    api_key = st.secrets["openai"]["api_key"]
     uploaded_file = st.file_uploader("Excelファイルをアップロードしてください", type=['xlsx'])
 
     if uploaded_file is not None:
